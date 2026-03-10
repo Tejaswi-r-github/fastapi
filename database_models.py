@@ -10,3 +10,11 @@ class Product(Base):
     description=Column(String(200))
     price=Column(Integer)
     quantity=Column(Integer)
+
+class Userr(Base):
+    __tablename__ = "userr"
+
+    id = Column(Integer,primary_key=True,index=True)
+    name = Column(String)
+    email=Column(String,unique=True,index=True)
+    password = Column(String)
