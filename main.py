@@ -125,85 +125,9 @@ def delete_product(id: int, db: Session = Depends(get_db)):
     else:
         return {"message": "product not found"}
 
-# pwd_context=CryptContext(schemes=["bcrypt"],deprecated="auto")
-# def hash_password(password: str):
-#     return pwd_context.hash(password)
-
-# def verify_password(plain, hashed):
-#     return pwd_context.verify(plain, hashed)        
-
-# SECRET_KEY = "my_super_secret_key_123"
-# ALGORITHM = "HS256"
-# ACCESS_TOKEN_EXPIRE_MINUTES = 30
-# def create_access_token(data: dict):
-#     to_encode = data.copy()
-#     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     to_encode.update({"exp": expire})
-#     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# @app.post("/register")
-# def register(user:UserCreate,db:Session=Depends(get_db)):
-#     db_user=db.query(database_models.User).filter(database_models.User.email==user.email).first()
-#     if db_user:
-#         raise HTTPException(status_code=400, detail="Email already registered")
-#     hashed_password = hash_password(user.password)
 
-#     new_user = database_models.User(
-#         username=user.username,
-#         email=user.email,
-#         password=hashed_password
-#     )
-#     db.add(new_user)
-#     try:
-#         db.commit()
-#     except IntegrityError:
-#         db.rollback()   
-#         raise HTTPException(status_code=400, detail="Email or username already exists")
-#     db.refresh(new_user)
-
-
-#     return {"message": "User created successfully"}
-
-# @app.post("/login")
-# def login(user: UserLogin, db: Session = Depends(get_db)):
-
-#     db_user = db.query(database_models.User).filter(
-#         database_models.User.username == user.username
-#     ).first()
-
-#     if not db_user:
-#         raise HTTPException(status_code=400, detail="Invalid username")
-
-#     if not verify_password(user.password, db_user.password):
-#         raise HTTPException(status_code=400, detail="Invalid password")
-#     token = create_access_token(data={"sub": db_user.username}) # type: ignore
-
-#     return {
-#         "access_token": token,
-#         "token_type": "bearer"
-#     }
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username = payload.get("sub")
-
-#         if username is None:
-#             raise HTTPException(status_code=401, detail="Invalid token")
-
-#         return username
-
-#     except JWTError:
-#         raise HTTPException(status_code=401, detail="Invalid token")
-
-
-# @app.get("/protected")
-# def protected_route(user: str = Depends(get_current_user)):
-#     return {"message": f"Hello {user}, you are authenticated"}
 
 
 
