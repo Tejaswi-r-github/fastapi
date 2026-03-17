@@ -59,14 +59,14 @@ init_db()
 
 
 # Get all products
-@app.get("/products")
+@app.get("/products",tags=['products'])
 def get_all_products(db: Session = Depends(get_db)):
     db_products = db.query(database_models.Product).all()
     return db_products
 
 
 # Get single product
-@app.get('/product/{id}')
+@app.get('/product/{id}',tags=['products'])
 def get_product(id: int, db: Session = Depends(get_db)):
     db_product = db.query(database_models.Product).filter(
         database_models.Product.id == id
@@ -79,7 +79,7 @@ def get_product(id: int, db: Session = Depends(get_db)):
 
 
 # Add product
-@app.post('/product')
+@app.post('/product',tags=['products'])
 def add_product(product: Product, db: Session = Depends(get_db)):
     db_product = database_models.Product(**product.model_dump())
 
@@ -91,7 +91,7 @@ def add_product(product: Product, db: Session = Depends(get_db)):
 
 
 # Update product
-@app.put('/product')
+@app.put('/product',tags=['products'])
 def update_product(id: int, product: Product, db: Session = Depends(get_db)):
     db_product = db.query(database_models.Product).filter(
         database_models.Product.id == id
@@ -111,7 +111,7 @@ def update_product(id: int, product: Product, db: Session = Depends(get_db)):
 
 
 # Delete product
-@app.delete('/product')
+@app.delete('/product',tags=['products'])
 def delete_product(id: int, db: Session = Depends(get_db)):
     db_product = db.query(database_models.Product).filter(
         database_models.Product.id == id
@@ -132,7 +132,7 @@ def delete_product(id: int, db: Session = Depends(get_db)):
 
 
 
-@app.post('/user',response_model=ShowUserr)
+@app.post('/user',response_model=ShowUserr,tags=['user'])
 def create_user(userr:Userr,db: Session = Depends(get_db)):
     #new_user=database_models.Userr(**userr.model_dump())
     new_user=database_models.Userr(
@@ -146,10 +146,45 @@ def create_user(userr:Userr,db: Session = Depends(get_db)):
     return new_user
 
 
-@app.get('/user/{id}',response_model=models.ShowUserr)
+@app.get('/user/{id}',response_model=models.ShowUserr,tags=['user'])
 def get_user(id:int,db: Session = Depends(get_db)):
     user=db.query(database_models.Userr).filter(database_models.Userr.id==id).first()
     if  not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"user with the id {id} is not available")
     
     return user
+
+
+
+
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],   # allow all (for development)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.middleware("http")
+async def middleware(request,call_next):
+    print("before")
+    response=await call_next(request)
+    print("after")
+    return response
+
+from sqlalchemy import text
+@app.get('/customers')
+def get_customers(db:Session=Depends(get_db)):
+    data=db.execute(text("select * from customers")).fetchall()
+    return [dict(row._mapping) for row in data]
+
+
+
+@app.get('/orders')
+def get_orders(db:Session=Depends(get_db)):
+    data=db.execute(text("select * from orders")).fetchall()
+    return [dict(row._mapping) for row in data]

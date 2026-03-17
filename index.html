@@ -1,0 +1,33 @@
+<body>
+
+<h2>Products</h2>
+
+<button onclick="getProducts()">Products List</button>
+
+<ul id="products"></ul>
+
+<script>
+function getProducts(){
+    fetch("http://127.0.0.1:8000/products")
+    .then(response => response.json())
+    .then(data => {
+
+        let list = document.getElementById("products");
+
+        list.innerHTML="";
+
+        data.forEach(product => {
+
+            let li = document.createElement("li");
+            li.textContent = product.name;
+
+            list.appendChild(li);
+
+        });
+
+    })
+    .catch(error => console.log(error));
+}
+</script>
+
+</body>
