@@ -25,6 +25,9 @@ def get_db():
         db.close()
 
 
+
+
+
 # Create tables
 database_models.Base.metadata.create_all(bind=engine)
 
@@ -132,7 +135,7 @@ def delete_product(id: int, db: Session = Depends(get_db)):
 
 
 
-@app.post('/user',response_model=ShowUserr,tags=['user'])
+@app.post('/user',response_model=ShowUserr,tags=['user'],status_code=status.HTTP_201_CREATED)
 def create_user(userr:Userr,db: Session = Depends(get_db)):
     #new_user=database_models.Userr(**userr.model_dump())
     new_user=database_models.Userr(
