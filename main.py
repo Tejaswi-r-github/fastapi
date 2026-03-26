@@ -57,8 +57,10 @@ def init_db():
 
     db.close()
 
-
 init_db()
+
+
+
 
 
 # Get all products
@@ -66,6 +68,8 @@ init_db()
 def get_all_products(db: Session = Depends(get_db)):
     db_products = db.query(database_models.Product).all()
     return db_products
+
+
 
 
 # Get single product
@@ -85,6 +89,12 @@ def get_product(id: int, db: Session = Depends(get_db)):
 @app.post('/product',tags=['products'])
 def add_product(product: Product, db: Session = Depends(get_db)):
     db_product = database_models.Product(**product.model_dump())
+    #db_product = database_models.Product(
+    #name=product.name,
+    #description=product.description,
+    #price=product.price,
+    #quantity=product.quantity
+#)
 
     db.add(db_product)
     db.commit()
@@ -191,3 +201,32 @@ def get_customers(db:Session=Depends(get_db)):
 def get_orders(db:Session=Depends(get_db)):
     data=db.execute(text("select * from orders")).fetchall()
     return [dict(row._mapping) for row in data]
+
+
+
+
+# writing python code for creating views
+@app.get("/createview")
+def create_view(db:Session=Depends(get_db)):
+    db.execute(text("""create  or replace view product_view
+                     as select name,description from product"""))
+    db.commit()
+    return "view created"
+    
+
+@app.get("/getview")
+def getview(db:Session=Depends(get_db)):
+    data=db.execute(text("select * from product_view")).fetchall()
+    return [dict(row._mapping) for row in data]
+
+
+
+#stored procedure
+
+@app.put("/product/{product_id}/category")
+def update_category(product_id: int, category: str):
+    with engine.connect() as conn:
+        conn.execute(text("SELECT update_product_category(:id, :cat)"),
+                     {"id": product_id, "cat": category})
+        conn.commit()
+    return {"message": f"Product {product_id} category updated to {category}"}                                           

@@ -23,4 +23,7 @@ class Product(Base):
     price=Column(Integer)
     quantity=Column(Integer)
     user_id=Column(Integer,ForeignKey("userr.id"))
+    category=Column(String(100))
     owner=relationship('Userr',back_populates='products')
+
+
